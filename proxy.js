@@ -47,6 +47,40 @@ router.get('/lights/:room/brightness', async (req, res)=>{
 
 })
 
+router.get('/lights/:room/brightness/modify/:method', async(req, res)=>{
+
+  //current brightness
+  const endpoint = `${base}/lights/9`
+  const light = await fetch(endpoint).then(r=>r.json())
+  let brightness = parseInt(light.state.bri)
+
+  if(req.params.method === 'increase') {
+    const modified = brightness + 20
+    brightness = modified > 254 ? 254 : modified
+  } else if (req.params.method === 'decrease') {
+    const modified = brightness - 20
+    brightness = modified < 0 ? 0 : modified
+  }
+
+  const ids = [9,10]
+  const responses = await Promise.all(ids.map(async (id)=>{
+
+    const endpoint = `${base}/lights/${id}/state`
+    const body = { "bri": brightness }
+
+    const response = await fetch(endpoint, {
+      method: 'put',
+      body: JSON.stringify(body)
+    }).then(r=>r.json())
+
+    return response
+
+  }))
+
+  return res.json(responses)
+
+})
+
 router.get('/lights/:room/brightness/:value', async(req, res)=>{
 
   const ids = [9,10]

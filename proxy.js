@@ -54,11 +54,13 @@ router.get('/lights/:room/brightness/modify/:method', async(req, res)=>{
   const light = await fetch(endpoint).then(r=>r.json())
   let brightness = parseInt(light.state.bri)
 
+  const stepModifier = 35
+
   if(req.params.method === 'increase') {
-    const modified = brightness + 20
+    const modified = brightness + stepModifier
     brightness = modified > 254 ? 254 : modified
   } else if (req.params.method === 'decrease') {
-    const modified = brightness - 20
+    const modified = brightness - stepModifier
     brightness = modified < 0 ? 0 : modified
   }
 

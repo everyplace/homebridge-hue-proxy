@@ -14,6 +14,65 @@ const router = express.Router()
 const { hue_address, hue_key } = process.env
 const base = `http://${hue_address}/api/${hue_key}`
 
+
+async function on(id) {
+  const updateEndpoint = `${base}/lights/${id}/state`
+  const body = { "on": true }
+
+  returm await fetch(updateEndpoint, {
+    method: 'put',
+    body: JSON.stringify(body)
+  }).then(r=>r.json())
+}
+
+async function off(id) {
+  const updateEndpoint = `${base}/lights/${id}/state`
+  const body = { "on": false }
+
+  return await fetch(updateEndpoint, {
+    method: 'put',
+    body: JSON.stringify(body)
+  }).then(r=>r.json())
+}
+
+// await brightness(9) //get
+// await brightness(9, increase) //increase by 35
+async function brightness(id, method = undefined) {
+  if(!id) throw new Error('Must specify an id as the first param')
+
+  await on(id)
+  
+  const stepModifier = 35
+  const endpoint = `${base}/lights/${id}`
+  const light = await fetch(endpoint).then(r=>r.json())
+
+  let brightness = parseInt(light.state.bri)
+
+  if(method !== undefined) {
+  
+    if(method === 'increase') {
+      const modified = brightness + stepModifier
+      brightness = modified > 254 ? 254 : modified
+    } else if (method === 'decrease') {
+      const modified = brightness - stepModifier
+      brightness = modified < 0 ? 0 : modified
+    } else {
+      throw new Error('Invalid method type. Current valid methods: increase, decrease')
+    }
+
+    const updateEndpoint = `${base}/lights/${id}/state`
+    const body = { "bri": brightness }
+
+    await fetch(updateEndpoint, {
+      method: 'put',
+      body: JSON.stringify(body)
+    }).then(r=>r.json())
+
+  }
+  
+  return brightness
+}
+
 router.get('', (req, res)=>{
 
   res.end("lights")
@@ -49,34 +108,9 @@ router.get('/lights/:room/brightness', async (req, res)=>{
 
 router.get('/lights/:room/brightness/modify/:method', async(req, res)=>{
 
-  //current brightness
-  const endpoint = `${base}/lights/9`
-  const light = await fetch(endpoint).then(r=>r.json())
-  let brightness = parseInt(light.state.bri)
-
-  const stepModifier = 35
-
-  if(req.params.method === 'increase') {
-    const modified = brightness + stepModifier
-    brightness = modified > 254 ? 254 : modified
-  } else if (req.params.method === 'decrease') {
-    const modified = brightness - stepModifier
-    brightness = modified < 0 ? 0 : modified
-  }
-
   const ids = [9,10]
-  const responses = await Promise.all(ids.map(async (id)=>{
-
-    const endpoint = `${base}/lights/${id}/state`
-    const body = { "bri": brightness }
-
-    const response = await fetch(endpoint, {
-      method: 'put',
-      body: JSON.stringify(body)
-    }).then(r=>r.json())
-
-    return response
-
+  const responses = await Promise.all(ids.map(async(id)=>{
+    brightness(id, req.params.method)
   }))
 
   return res.json(responses)

@@ -92,14 +92,14 @@ router.get('/lights', async (req, res)=>{
 
 router.get('/lights/:room/', async(req, res)=>{
 
-  const ids = await room(req.params.room).pop()
+  const ids = room(req.params.room).devices
   return res.json(ids)
 
 })
 
 router.get('/lights/:room/brightness', async (req, res)=>{
 
-  const id = await room(req.params.room).pop()
+  const id = room(req.params.room).devices.pop()
   const light = brightness(id)
   return res.json(light)
   
@@ -107,7 +107,7 @@ router.get('/lights/:room/brightness', async (req, res)=>{
 
 router.get('/lights/:room/brightness/modify/:method', async(req, res)=>{
 
-  const ids = await room(req.params.room)
+  const ids = room(req.params.room).devices
   const responses = await Promise.all(ids.map(async(id)=>{
     brightness(id, req.params.method)
   }))
@@ -118,7 +118,7 @@ router.get('/lights/:room/brightness/modify/:method', async(req, res)=>{
 
 router.get('/lights/:room/brightness/:value', async(req, res)=>{
 
-  const ids = await room(req.params.room)
+  const ids = room(req.params.room).devices
   const responses = await Promise.all(ids.map(async (id)=>{
     return await brightness(id, 'set', req.params.value)
   }))

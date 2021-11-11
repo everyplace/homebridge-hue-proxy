@@ -6,7 +6,7 @@ const rooms = [
 ]
 
 function room(name) {
-  return rooms.filter(room=>room.name.toLowercasse()===name.toLowercase()).pop()
+  return rooms.filter(room=>room.name.toLowercase()===name.toLowercase()).pop()
 }
 
 export {rooms, room}

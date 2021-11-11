@@ -4,6 +4,7 @@
   "description": "A rough project for more programmatically interfacing with a Phillips Hue box, potentially from Homekit",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test-watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch"
   },

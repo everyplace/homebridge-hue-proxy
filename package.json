@@ -4,6 +4,7 @@
   "description": "A rough project for more programmatically interfacing with a Phillips Hue box, potentially from Homekit",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "type": "module",

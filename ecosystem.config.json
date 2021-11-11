@@ -1,0 +1,6 @@
+[{
+  name: "hue-proxy",
+  script: "npm start",
+  watch: true,
+  exec_mode: "fork"
+}]

@@ -19,7 +19,7 @@ async function on(id) {
   const updateEndpoint = `${base}/lights/${id}/state`
   const body = { "on": true }
 
-  returm await fetch(updateEndpoint, {
+  return await fetch(updateEndpoint, {
     method: 'put',
     body: JSON.stringify(body)
   }).then(r=>r.json())

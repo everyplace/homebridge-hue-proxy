@@ -109,7 +109,7 @@ router.get('/lights/:room/brightness/modify/:method', async(req, res)=>{
 
   const ids = room(req.params.room).devices
   const responses = await Promise.all(ids.map(async(id)=>{
-    brightness(id, req.params.method)
+    return brightness(id, req.params.method)
   }))
 
   return res.json(responses)

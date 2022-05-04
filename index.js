@@ -13,7 +13,9 @@ console.log(process.env.hue_address)
 const app = express();
 
 import proxy from './proxy.js'
+import v2 from './v2.js'
 
+app.use('/v2', v2)
 app.use('/', proxy)
 
 // listen for requests :)

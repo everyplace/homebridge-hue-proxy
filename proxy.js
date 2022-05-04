@@ -1,16 +1,16 @@
 import fetch from 'node-fetch'
 import express from 'express'
-import { resolve } from "path"                                                                                                                         
+import { resolve } from "path"
 import { config } from "dotenv"
 import { room } from './rooms.js'
 
-//load .env                                                                                                                                            
-import { fileURLToPath } from 'url';                                                                                                                   
-import { dirname } from 'path';                                                                                                                        
-const __filename = fileURLToPath(import.meta.url);                                                                                                     
-const __dirname = dirname(__filename);                                                                                                                 
-config({ path: resolve(__dirname, ".env") })                                                                                                           
-                                                                                                                                                       
+//load .env
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+config({ path: resolve(__dirname, ".env") })
+
 const router = express.Router()
 const { hue_address, hue_key } = process.env
 const base = `http://${hue_address}/api/${hue_key}`
@@ -41,7 +41,7 @@ async function brightness(id, method = undefined, value = undefined) {
   if(!id) throw new Error('Must specify an id as the first param')
 
   await on(id)
-  
+
   const stepModifier = 35
   const endpoint = `${base}/lights/${id}`
   const light = await fetch(endpoint).then(r=>r.json())
@@ -49,7 +49,7 @@ async function brightness(id, method = undefined, value = undefined) {
   let brightness = parseInt(light.state.bri)
 
   if(method !== undefined) {
-  
+
     if(method === 'increase') {
       const modified = brightness + stepModifier
       brightness = modified > 254 ? 254 : modified
@@ -65,13 +65,15 @@ async function brightness(id, method = undefined, value = undefined) {
     const updateEndpoint = `${base}/lights/${id}/state`
     const body = { "bri": brightness }
 
-    await fetch(updateEndpoint, {
+    const hueResponse = await fetch(updateEndpoint, {
       method: 'put',
       body: JSON.stringify(body)
     }).then(r=>r.json())
 
+    console.log({updateEndpoint, body, hueResponse:hueResponse[0]})
+
   }
-  
+
   return brightness
 }
 
@@ -99,10 +101,16 @@ router.get('/lights/:room/', async(req, res)=>{
 
 router.get('/lights/:room/brightness', async (req, res)=>{
 
-  const id = room(req.params.room).devices.pop()
-  const light = brightness(id)
+  const id = room(req.params.room).devices[0]
+  const light = await brightness(id)
   return res.json(light)
-  
+
+})
+
+router.get('/lights/:room/brightness/:id', async (req, res)=>{
+  const { id } = req.params
+  const light = await brightness(id)
+  return res.json(light)
 })
 
 router.get('/lights/:room/brightness/modify/:method', async(req, res)=>{
@@ -116,14 +124,18 @@ router.get('/lights/:room/brightness/modify/:method', async(req, res)=>{
 
 })
 
-router.get('/lights/:room/brightness/:value', async(req, res)=>{
+router.get('/lights/:room/brightness/:id/:value', async(req, res)=>{
 
-  const ids = room(req.params.room).devices
+  const { id, value } = req.params
+
+  /*
   const responses = await Promise.all(ids.map(async (id)=>{
     return await brightness(id, 'set', req.params.value)
   }))
+  */
 
-  return res.json(responses)
+  const response = await brightness(id, 'set', value)
+  return res.json(response)
 })
 
 export default router

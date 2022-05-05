@@ -1,36 +1,32 @@
-import { 
-  brightness,
-  off,
-  on
- } from './proxy.js'
+import lights from './lights.js'
 
 const high = 200
 const low = 10
 const light = 16 //cama grande light
 
 test('setting the light high should work', async()=>{
-  const result = await brightness(light, 'set', high)
+  const result = await lights.brightness(light, 'set', high)
   expect(result).toEqual(high)
 })
 
 test('light status should be returned high', async ()=>{
-  const result = await brightness(light)
+  const result = await lights.brightness(light)
   expect(result).toEqual(high)
 })
 
 test('setting the light low should work', async()=>{
-  const result = await brightness(light, 'set', low)
+  const result = await lights.brightness(light, 'set', low)
   expect(result).toEqual(low)
 })
 
 test('light status should be returned as low', async()=>{
-  const result = await brightness(light)
+  const result = await lights.brightness(light)
   expect(result).toEqual(low)
 })
 
 
 test('light should turn off', async()=>{
-  const result = await off(light)
+  const result = await lights.off(light)
   const expectedKey = `/lights/${light}/state/on`
   const resultValue = result[0].success[expectedKey]
   const expectedValue = false
@@ -38,7 +34,7 @@ test('light should turn off', async()=>{
 })
 
 test('light should turn on', async()=>{
-  const result = await on(light)
+  const result = await lights.on(light)
   const expectedKey = `/lights/${light}/state/on`
   const resultValue = result[0].success[expectedKey]
   const expectedValue = true

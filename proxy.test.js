@@ -1,29 +1,49 @@
-//import { rooms, room} from './rooms.js'
-import { brightness } from './proxy.js'
+import { 
+  brightness,
+  off,
+  on
+ } from './proxy.js'
 
 const high = 200
 const low = 10
+const light = 16 //cama grande light
 
 test('setting the light high should work', async()=>{
-  const result = await brightness(16, 'set', high)
+  const result = await brightness(light, 'set', high)
   expect(result).toEqual(high)
 })
 
 test('light status should be returned high', async ()=>{
-  const result = await brightness(16)
+  const result = await brightness(light)
   expect(result).toEqual(high)
 })
 
 test('setting the light low should work', async()=>{
-  const result = await brightness(16, 'set', low)
+  const result = await brightness(light, 'set', low)
   expect(result).toEqual(low)
 })
 
 test('light status should be returned as low', async()=>{
-  const result = await brightness(16)
+  const result = await brightness(light)
   expect(result).toEqual(low)
 })
 
+
+test('light should turn off', async()=>{
+  const result = await off(light)
+  const expectedKey = `/lights/${light}/state/on`
+  const resultValue = result[0].success[expectedKey]
+  const expectedValue = false
+  expect(resultValue).toEqual(expectedValue)
+})
+
+test('light should turn on', async()=>{
+  const result = await on(light)
+  const expectedKey = `/lights/${light}/state/on`
+  const resultValue = result[0].success[expectedKey]
+  const expectedValue = true
+  expect(resultValue).toEqual(expectedValue)
+})
 
 
 

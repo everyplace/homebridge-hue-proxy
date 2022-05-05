@@ -139,4 +139,4 @@ router.get('/lights/:room/brightness/:id/:value', async(req, res)=>{
 })
 
 export default router
-export { brightness }
+export { brightness, off, on }

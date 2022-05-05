@@ -20,23 +20,11 @@ class Lights {
   }
 
   async on(id) {
-    const updateEndpoint = `${this.base}/lights/${id}/state`
-    const body = { "on": true }
-
-    return await fetch(updateEndpoint, {
-      method: 'put',
-      body: JSON.stringify(body)
-    }).then(r=>r.json())
+    return await this.updateLight(id, { "on": true })
   }
 
   async off(id) {
-    const updateEndpoint = `${this.base}/lights/${id}/state`
-    const body = { "on": false }
-
-    return await fetch(updateEndpoint, {
-      method: 'put',
-      body: JSON.stringify(body)
-    }).then(r=>r.json())
+    return await this.updateLight(id, { "on": false })
   }
 
   // await brightness(9) //get
@@ -69,7 +57,7 @@ class Lights {
       const updateEndpoint = `${this.base}/lights/${id}/state`
       const body = { "bri": brightness }
 
-      const hueResponse = this.updateLight(updateEndpoint, body)
+      const hueResponse = this.updateLight(id, body)
 
       console.log({updateEndpoint, body, hueResponse:hueResponse[0]})
 
@@ -78,11 +66,16 @@ class Lights {
     return brightness
   }
 
-  async updateLight (updateEndpoint, body) {
+  async updateLight (id, body) {
+    const updateEndpoint = this.endpoint(id)
     return await fetch(updateEndpoint, {
       method: 'put',
       body: JSON.stringify(body)
     }).then(r=>r.json())
+  }
+
+  endpoint(id) {
+    return `${this.base}/lights/${id}/state`
   }
 
 }

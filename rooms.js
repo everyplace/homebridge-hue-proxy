@@ -1,11 +1,11 @@
 const rooms = [
   {
     name: 'Oficina',
-    devices: [9,10]
+    devices: [9,10,23] //fan, fan, lamp
   },
   {
     name: 'Cama Grande',
-    devices: [16]
+    devices: [16] //lamp
   }
 ]
 

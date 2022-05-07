@@ -41,6 +41,11 @@ test('light should turn on', async()=>{
   expect(resultValue).toEqual(expectedValue)
 })
 
+test('setting the light high should work', async()=>{
+  const result = await lights.brightness(light, 'set', high)
+  expect(result).toEqual(high)
+})
+
 
 
 /*

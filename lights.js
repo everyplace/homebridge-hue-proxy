@@ -30,6 +30,7 @@ class Lights {
   // await brightness(9) //get
   // await brightness(9, increase) //increase by 35
   async brightness(id, method = undefined, value = undefined) {
+    id = parseInt(id)
     if(!id) throw new Error('Must specify an id as the first param')
 
     await this.on(id)
@@ -49,7 +50,7 @@ class Lights {
         const modified = brightness - stepModifier
         brightness = modified < 0 ? 0 : modified
       } else if (method === 'set') {
-        brightness = value
+        brightness = parseInt(value)
       } else {
         throw new Error('Invalid method type. Current valid methods: increase, decrease')
       }

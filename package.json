@@ -1,6 +1,6 @@
 {
   "name": "homebridge-hue-proxy",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A rough project for more programmatically interfacing with a Phillips Hue box, potentially from Homekit",
   "main": "index.js",
   "scripts": {

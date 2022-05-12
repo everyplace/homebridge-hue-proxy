@@ -74,7 +74,6 @@ class Lights {
     let attrValue = light.state[attr]
 
     if(value !== undefined) {
-      const updateEndpoint = `${this.base}/lights/${id}/state`
       const body = {}
       body[attr] = value
 

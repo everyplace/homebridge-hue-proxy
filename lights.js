@@ -58,13 +58,57 @@ class Lights {
       const updateEndpoint = `${this.base}/lights/${id}/state`
       const body = { "bri": brightness }
 
-      const hueResponse = this.updateLight(id, body)
+      const hueResponse = await this.updateLight(id, body)
 
       console.log({updateEndpoint, body, hueResponse:hueResponse[0]})
 
     }
 
     return brightness
+  }
+
+  async hue (id, value = undefined) {
+    id = parseInt(id)
+    if(!id) throw new Error('Must specify an id as the first param')
+
+    await this.on(id)
+    const endpoint = `${this.base}/lights/${id}`
+    const light = await fetch(endpoint).then(r=>r.json())
+
+    let { hue, sat } = light.state
+
+    if(value !== undefined) {
+      const updateEndpoint = `${this.base}/lights/${id}/state`
+      const body = { "hue": value }
+
+      const hueResponse = await this.updateLight(id, body)
+      hue = hueResponse[0].success[`/lights/${id}/state/hue`]
+    }
+
+    return hue
+
+  }
+
+  async saturation (id, value = undefined) {
+    id = parseInt(id)
+    if(!id) throw new Error('Must specify an id as the first param')
+
+    await this.on(id)
+    const endpoint = `${this.base}/lights/${id}`
+    const light = await fetch(endpoint).then(r=>r.json())
+
+    let { hue, sat } = light.state
+
+    if(value !== undefined) {
+      const updateEndpoint = `${this.base}/lights/${id}/state`
+      const body = { "sat": value }
+
+      const hueResponse = await this.updateLight(id, body)
+      sat = hueResponse[0].success[`/lights/${id}/state/sat`]
+    }
+
+    return sat
+
   }
 
   async updateLight (id, body) {

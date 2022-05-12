@@ -2,7 +2,7 @@ import lights from './lights.js'
 
 const high = 200
 const low = 10
-const light = 16 //cama grande light
+const light = 15 //honeycomb sconce
 
 test('setting the light high should work', async()=>{
   const result = await lights.brightness(light, 'set', high)
@@ -46,7 +46,35 @@ test('setting the light high should work', async()=>{
   expect(result).toEqual(high)
 })
 
+test('light should return a color value', async()=>{
+  const result = await lights.hue(light)
+  expect(result).toEqual(8417)
+})
 
+test('light should be able to have its hue set to 1000', async()=>{
+  const result = await lights.hue(light, 1000)
+  expect(result).toEqual(1000)
+})
+
+test('light should be able to have its hue reset to 8417', async()=>{
+  const result = await lights.hue(light, 8417)
+  expect(result).toEqual(8417)
+})
+
+test('light should return a saturation value', async()=>{
+  const result = await lights.saturation(light)
+  expect(result).toEqual(140)
+})
+
+test('light should be able to have its saturation set to 0', async()=>{
+  const result = await lights.saturation(light, 0)
+  expect(result).toEqual(0)
+})
+
+test('light should be able to have its saturation reset to 140', async()=>{
+  const result = await lights.saturation(light, 140)
+  expect(result).toEqual(140)
+})
 
 /*
 test('rooms should load correctly', () => {

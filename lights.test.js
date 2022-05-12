@@ -3,6 +3,10 @@ import lights from './lights.js'
 const high = 200
 const low = 10
 const light = 15 //honeycomb sconce
+const highHue = 8417 
+const lowHue = 1000
+const highSaturation = 140
+const lowSaturation = 0
 
 test('setting the light high should work', async()=>{
   const result = await lights.brightness(light, 'set', high)
@@ -48,17 +52,17 @@ test('setting the light high should work', async()=>{
 
 test('light should return a color value', async()=>{
   const result = await lights.hue(light)
-  expect(result).toEqual(8417)
+  expect(result).toEqual(highHue)
 })
 
-test('light should be able to have its hue set to 1000', async()=>{
-  const result = await lights.hue(light, 1000)
-  expect(result).toEqual(1000)
+test(`light should be able to have its hue set to ${lowHue}`, async()=>{
+  const result = await lights.hue(light, lowHue)
+  expect(result).toEqual(lowHue)
 })
 
-test('light should be able to have its hue reset to 8417', async()=>{
-  const result = await lights.hue(light, 8417)
-  expect(result).toEqual(8417)
+test(`light should be able to have its hue reset to ${highHue}`, async()=>{
+  const result = await lights.hue(light, highHue)
+  expect(result).toEqual(highHue)
 })
 
 test('light should return a saturation value', async()=>{

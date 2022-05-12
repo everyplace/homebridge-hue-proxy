@@ -17,6 +17,8 @@ class Lights {
     this.hue_address = hue_address
     this.hue_key = hue_key
     this.base = `http://${hue_address}/api/${hue_key}`
+
+    this.stepModifier = 35
   }
 
   async on(id) {
@@ -27,69 +29,41 @@ class Lights {
     return await this.updateLight(id, { "on": false })
   }
 
+
   // await brightness(9) //get
-  // await brightness(9, increase) //increase by 35
+  // await brightness(9, increase) //increase by 35  
   async brightness(id, method = undefined, value = undefined) {
-    id = parseInt(id)
-    if(!id) throw new Error('Must specify an id as the first param')
+    let bri = await this.attribute(id, 'bri')
 
-    await this.on(id)
+    if(method === undefined && value === undefined) return bri
 
-    const stepModifier = 35
-    const endpoint = `${this.base}/lights/${id}`
-    const light = await fetch(endpoint).then(r=>r.json())
-
-    let brightness = parseInt(light.state.bri)
-
-    if(method !== undefined) {
-
-      if(method === 'increase') {
-        const modified = brightness + stepModifier
-        brightness = modified > 254 ? 254 : modified
-      } else if (method === 'decrease') {
-        const modified = brightness - stepModifier
-        brightness = modified < 0 ? 0 : modified
-      } else if (method === 'set') {
-        brightness = parseInt(value)
-      } else {
-        throw new Error('Invalid method type. Current valid methods: increase, decrease')
-      }
-
-      const updateEndpoint = `${this.base}/lights/${id}/state`
-      const body = { "bri": brightness }
-
-      const hueResponse = await this.updateLight(id, body)
-
-      console.log({updateEndpoint, body, hueResponse:hueResponse[0]})
-
+    if(['increase','decrease'].includes(method)) {
+      bri = method === 'increase' 
+        ? bri + this.stepModifier
+        : bri - this.stepModifier
+      // make sure brightness is between 1 and 254
+      bri = bri > 254 ? 254 : bri < 1 ? 1 : bri
+    } else if (value !== undefined) {
+      bri = value
     }
 
-    return brightness
+    return await this.attribute(id, 'bri', bri)
+
   }
-
+  
   async hue (id, value = undefined) {
-    id = parseInt(id)
-    if(!id) throw new Error('Must specify an id as the first param')
 
-    await this.on(id)
-    const endpoint = `${this.base}/lights/${id}`
-    const light = await fetch(endpoint).then(r=>r.json())
-
-    let { hue, sat } = light.state
-
-    if(value !== undefined) {
-      const updateEndpoint = `${this.base}/lights/${id}/state`
-      const body = { "hue": value }
-
-      const hueResponse = await this.updateLight(id, body)
-      hue = hueResponse[0].success[`/lights/${id}/state/hue`]
-    }
-
-    return hue
+    return await this.attribute(id, 'hue', value)
 
   }
 
   async saturation (id, value = undefined) {
+  
+    return await this.attribute(id, 'sat', value)
+
+  }
+
+  async attribute (id, attr, value = undefined) {
     id = parseInt(id)
     if(!id) throw new Error('Must specify an id as the first param')
 
@@ -97,17 +71,18 @@ class Lights {
     const endpoint = `${this.base}/lights/${id}`
     const light = await fetch(endpoint).then(r=>r.json())
 
-    let { hue, sat } = light.state
+    let attrValue = light.state[attr]
 
     if(value !== undefined) {
       const updateEndpoint = `${this.base}/lights/${id}/state`
-      const body = { "sat": value }
+      const body = {}
+      body[attr] = value
 
-      const hueResponse = await this.updateLight(id, body)
-      sat = hueResponse[0].success[`/lights/${id}/state/sat`]
+      const response = await this.updateLight(id, body)
+      attrValue = response[0].success[`/lights/${id}/state/${attr}`]
     }
 
-    return sat
+    return attrValue
 
   }
 

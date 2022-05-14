@@ -95,4 +95,9 @@ router.get('/lights/:room/brightness/:id/:value', async(req, res)=>{
   return res.json(response)
 })
 
+router.get('/lights/saturation/:id', async(req, res)=>{
+  const response = await lights.saturation(id)
+  return res.json(response)
+})
+
 export default router
